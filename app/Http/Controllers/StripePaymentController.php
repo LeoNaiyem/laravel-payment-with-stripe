@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Payment;
 use Illuminate\Http\Request;
 use Stripe\Charge;
 use Stripe\Stripe;
@@ -18,16 +19,37 @@ class StripePaymentController extends Controller
         Stripe::setApiKey(env('STRIPE_SECRET'));
 
         try {
-            Charge::create([
-                'amount' => $request->amount * 100,
+            $charge = Charge::create([
+                'amount' => $request->amount * 100, // cents
                 'currency' => 'usd',
                 'source' => $request->stripeToken,
-                'description' => 'Payment from Laravel 12 app',
+                'description' => 'Payment of $' . $request->amount,
             ]);
 
-            return back()->with('success', 'Payment successful!');
-        } catch (\Exception $e) {
-            return back()->with('error', 'Payment failed: ' . $e->getMessage());
+            // Save payment info in DB
+            Payment::create([
+                'charge_id' => $charge->id,
+                'user_id' => auth()->id(), // null if guest
+                'amount' => $charge->amount,
+                'currency' => $charge->currency,
+                'status' => $charge->status,
+                'receipt_url' => $charge->receipt_url,
+                'payment_method' => $charge->payment_method,
+            ]);
+
+            return back()->with('success', 'Payment successful! Receipt: ' . $charge->receipt_url);
+
+        } catch (\Stripe\Exception\CardException $e) {
+            // Store failed payment
+            Payment::create([
+                'user_id' => auth()->id(),
+                'amount' => $request->amount * 100,
+                'currency' => 'usd',
+                'status' => 'failed',
+                'failure_message' => $e->getError()->message,
+            ]);
+
+            return back()->with('error', $e->getError()->message);
         }
     }
 }
