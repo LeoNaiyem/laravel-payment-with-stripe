@@ -1,13 +1,12 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PaymentInvoiceController;
 use App\Http\Controllers\StripePaymentController;
 use App\Models\Payment;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
 
 Route::get('/stripe', [StripePaymentController::class, 'index'])->name('stripe.index');
 Route::post('/stripe', [StripePaymentController::class, 'store'])->name('stripe.store');

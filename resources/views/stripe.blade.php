@@ -23,6 +23,12 @@
 
 @section('content')
     <div class="row justify-content-center">
+        <marquee behavior="scroll" direction="left">
+            <strong>Test Mode:</strong> Use card <code>4242 4242 4242 4242</code>, any future expiry, 3-digit CVC &
+            ZIP/postal
+            code. <em>No real charges will be made.</em>
+        </marquee>
+
         <div class="col-md-6">
             <div class="card shadow">
                 <div class="card-header bg-primary text-white text-center">
@@ -41,7 +47,6 @@
                     @if(session('error'))
                         <div class="alert alert-danger">{{ session('error') }}</div>
                     @endif
-
                     <form action="{{ route('stripe.store') }}" method="POST" id="payment-form">
                         @csrf
 
