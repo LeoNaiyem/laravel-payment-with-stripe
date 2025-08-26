@@ -1,17 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layouts.main-layout')
 
-<head>
-    <meta charset="UTF-8">
-    <title>Stripe Payment</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- Bootstrap 5 CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Stripe.js -->
-    <script src="https://js.stripe.com/v3/"></script>
-
+@section('title', 'Stripe Payment')
+@section('styles')
     <style>
         .StripeElement {
             background-color: white;
@@ -29,65 +19,64 @@
             display: none;
         }
     </style>
-</head>
+@endsection
 
-<body>
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="card shadow">
-                    <div class="card-header bg-primary text-white text-center">
-                        <h4>Stripe Payment</h4>
-                    </div>
-                    <div class="card-body">
+@section('content')
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4>Stripe Payment</h4>
+                </div>
+                <div class="card-body">
 
-                        @if(session('success'))
-                            <div class="alert alert-success">{{ session('success') }}</div>
-                        @endif
-                        @if(session('email_status'))
-                            <div style="color: blue; margin-bottom: 10px;">
-                                {{ session('email_status') }}
-                            </div>
-                        @endif
-                        @if(session('error'))
-                            <div class="alert alert-danger">{{ session('error') }}</div>
-                        @endif
+                    @if(session('success'))
+                        <div class="alert alert-success">{{ session('success') }}</div>
+                    @endif
+                    @if(session('email_status'))
+                        <div style="color: blue; margin-bottom: 10px;">
+                            {{ session('email_status') }}
+                        </div>
+                    @endif
+                    @if(session('error'))
+                        <div class="alert alert-danger">{{ session('error') }}</div>
+                    @endif
 
-                        <form action="{{ route('stripe.store') }}" method="POST" id="payment-form">
-                            @csrf
+                    <form action="{{ route('stripe.store') }}" method="POST" id="payment-form">
+                        @csrf
 
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Email</label>
-                                <input type="email" name="email" id="email" class="form-control" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="amount" class="form-label">Amount (USD)</label>
-                                <input type="number" name="amount" id="amount" class="form-control" min="1" required>
-                            </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" name="email" id="email" class="form-control"
+                                value="{{ old('email', auth()->user()->email ?? '') }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="amount" class="form-label">Amount (USD)</label>
+                            <input type="number" name="amount" id="amount" class="form-control" min="1" required>
+                        </div>
 
-                            <div class="mb-3">
-                                <label for="card-element" class="form-label">Card Details</label>
-                                <div id="card-element" class="form-control"></div>
-                            </div>
+                        <div class="mb-3">
+                            <label for="card-element" class="form-label">Card Details</label>
+                            <div id="card-element" class="form-control"></div>
+                        </div>
 
-                            <div id="card-errors" class="text-danger mb-3"></div>
+                        <div id="card-errors" class="text-danger mb-3"></div>
 
-                            <button type="submit" class="btn btn-success w-100" id="pay-button">
-                                <span id="button-text">Pay Now</span>
-                                <span class="spinner-border spinner-border-sm loading-spinner" role="status"
-                                    aria-hidden="true"></span>
-                            </button>
-                        </form>
+                        <button type="submit" class="btn btn-success w-100" id="pay-button">
+                            <span id="button-text">Pay Now</span>
+                            <span class="spinner-border spinner-border-sm loading-spinner" role="status"
+                                aria-hidden="true"></span>
+                        </button>
+                    </form>
 
-                    </div>
                 </div>
             </div>
         </div>
     </div>
+@endsection
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
+@section('scripts')
     <script>
         const stripe = Stripe("{{ config('services.stripe.key') }}");
         const elements = stripe.elements();
@@ -124,6 +113,4 @@
             }
         });
     </script>
-</body>
-
-</html>
+@endsection

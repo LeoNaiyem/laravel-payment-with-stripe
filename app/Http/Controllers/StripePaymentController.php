@@ -38,7 +38,7 @@ class StripePaymentController extends Controller
                 'payment_method' => $charge->payment_method,
             ]);
 
-            $customerEmail = "sumaiya.israt.17@gmail.com";
+            $customerEmail = $request->email ?? auth()->user()->email ?? null;
 
             if ($customerEmail) {
                 try {

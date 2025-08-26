@@ -20,15 +20,3 @@ Route::get('/payments/{payment}/invoice', [PaymentInvoiceController::class, 'dow
     ->name('payments.invoice');
 
 
-
-Route::get('/test-mail', function () {
-    try {
-        Mail::raw('Test email from Laravel', function ($message) {
-            $message->to('sumaiya.israt.17@gmail.com')
-                ->subject('Test Email');
-        });
-        return 'Mail sent!';
-    } catch (\Exception $e) {
-        return 'Mail failed: ' . $e->getMessage();
-    }
-});
