@@ -44,7 +44,11 @@
                         @if(session('success'))
                             <div class="alert alert-success">{{ session('success') }}</div>
                         @endif
-
+                        @if(session('email_status'))
+                            <div style="color: blue; margin-bottom: 10px;">
+                                {{ session('email_status') }}
+                            </div>
+                        @endif
                         @if(session('error'))
                             <div class="alert alert-danger">{{ session('error') }}</div>
                         @endif
@@ -52,6 +56,10 @@
                         <form action="{{ route('stripe.store') }}" method="POST" id="payment-form">
                             @csrf
 
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" name="email" id="email" class="form-control" required>
+                            </div>
                             <div class="mb-3">
                                 <label for="amount" class="form-label">Amount (USD)</label>
                                 <input type="number" name="amount" id="amount" class="form-control" min="1" required>

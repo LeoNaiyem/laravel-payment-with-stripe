@@ -49,6 +49,11 @@
                                     <span class="text-muted">N/A</span>
                                 @endif
                             </td>
+                            <td>
+                                @if($payment->status === 'succeeded')
+                                    <a href="{{ route('payments.invoice', $payment->id) }}">Download PDF</a>
+                                @endif
+                            </td>
                             <td>{{ $payment->created_at->format('M d, Y h:i A') }}</td>
                         </tr>
                     @empty

@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\PaymentInvoiceMail;
 use App\Models\Payment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Stripe\Charge;
 use Stripe\Stripe;
 
@@ -16,20 +18,19 @@ class StripePaymentController extends Controller
 
     public function store(Request $request)
     {
-        Stripe::setApiKey(env('STRIPE_SECRET'));
+        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
 
         try {
-            $charge = Charge::create([
-                'amount' => $request->amount * 100, // cents
+            $charge = \Stripe\Charge::create([
+                'amount' => $request->amount * 100,
                 'currency' => 'usd',
                 'source' => $request->stripeToken,
                 'description' => 'Payment of $' . $request->amount,
             ]);
 
-            // Save payment info in DB
-            Payment::create([
+            $payment = Payment::create([
                 'charge_id' => $charge->id,
-                'user_id' => auth()->id(), // null if guest
+                'user_id' => auth()->id(),
                 'amount' => $charge->amount,
                 'currency' => $charge->currency,
                 'status' => $charge->status,
@@ -37,10 +38,26 @@ class StripePaymentController extends Controller
                 'payment_method' => $charge->payment_method,
             ]);
 
-            return back()->with('success', 'Payment successful! Receipt: ' . $charge->receipt_url);
+            $customerEmail = "sumaiya.israt.17@gmail.com";
+
+            if ($customerEmail) {
+                try {
+                    // Send the email
+                    Mail::to($customerEmail)->send(new PaymentInvoiceMail($payment));
+                    $emailStatus = "Invoice email sent successfully!";
+                } catch (\Exception $e) {
+                    $emailStatus = "Payment succeeded, but failed to send email: " . $e->getMessage();
+                }
+            } else {
+                $emailStatus = "Payment succeeded, but no email provided.";
+            }
+
+            return back()->with([
+                'success' => 'Payment successful!',
+                'email_status' => $emailStatus
+            ]);
 
         } catch (\Stripe\Exception\CardException $e) {
-            // Store failed payment
             Payment::create([
                 'user_id' => auth()->id(),
                 'amount' => $request->amount * 100,
