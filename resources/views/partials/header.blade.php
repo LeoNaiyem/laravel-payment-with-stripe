@@ -18,26 +18,26 @@
             <ul class="navbar-nav ms-auto">
                 @auth
                     <li class="nav-item">
-                        <a class="nav-link" href="">Dashboard</a>
+                        <a class="nav-link" href="{{ route('home') }}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('dashboard') }}">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('stripe.index') }}">Pay</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('payments.index') }}">Payments</a>
                     </li>
                     <li class="nav-item">
-                        <form action="" method="POST" class="d-inline">
+                        <form action="{{ route('logout') }}" method="POST" class="d-inline">
                             @csrf
                             <button class="btn btn-sm btn-outline-light ms-2">Logout</button>
                         </form>
                     </li>
                 @else
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('stripe.index') }}">Pay</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('payments.index') }}">Payments History</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="">Login</a>
+                        <a class="nav-link" href="{{ route('login') }}">Login</a>
                     </li>
                 @endauth
             </ul>

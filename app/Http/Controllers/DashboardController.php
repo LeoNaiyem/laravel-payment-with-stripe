@@ -10,7 +10,7 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        return view('dashboard', [
+        return view('pages.dashboard.summary', [
             'totalRevenue' => Payment::where('status', 'succeeded')->sum('amount'),
             'totalPayments' => Payment::count(),
             'successfulPayments' => Payment::where('status', 'succeeded')->count(),
